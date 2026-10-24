@@ -170,3 +170,5 @@ Official references consulted:
 - [NGINX FastCGI module](https://nginx.org/en/docs/http/ngx_http_fastcgi_module.html).
 - [MySQL 8.4 foreign keys](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html).
 - [Marp CLI](https://github.com/marp-team/marp-cli).
+
+- I used local llm to summarize my work, organize my code, debug, and improve my code’s organization for a cleaner, simpler look. I did not use AI to write any of my code but it did give me suggestions on how to improve and make it more organized and profesional. AI did do the slides, read me, and setup but under my close supervision I made sure it included everything went 1 by 1 and I understood everything. 
