@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Aquarium API tests</title>
+<style>
+body {font:16px system-ui; max-width:850px; margin:30px auto; padding:16px}
+input,textarea,select,button {font:inherit; padding:8px; margin:4px 0}
+textarea {display:block; width:95%; height:90px}
+pre {background:#eee; padding:16px; white-space:pre-wrap}
+</style>
+<h1>Aquarium API tests</h1>
+<p>Choose an endpoint, replace IDs and JSON values, then send. Create a tank first and use its returned ID. Enter a token only for protected requests.</p>
+<label>Endpoint <select id="endpoint"></select></label><br>
+<label>Path <input id="path" size="35"></label><br>
+<label>Bearer token <input id="token" type="password" autocomplete="off"></label>
+<label for="body">JSON body (POST / PUT)</label><textarea id="body"></textarea>
+<button id="send">Send request</button>
+<pre id="result" aria-live="polite">Response appears here.</pre>
+<script>
+const routes = [
+ ['GET','/tanks',null],
+ ['GET','/tanks/1',null],
+ ['POST','/tanks',{name:'Living room',gallons:20}],
+ ['PUT','/tanks/1',{name:'Living room',gallons:25}],
+ ['DELETE','/tanks/1',null],
+ ['GET','/tanks/1/readings',null],
+ ['POST','/readings',{tank_id:1,ph:7,temperature_c:24}],
+ ['DELETE','/readings/1',null],
+ ['GET','/tanks/1/plants',null],
+ ['POST','/plants',{tank_id:1,name:'Java fern'}]
+];
+const endpoint = document.getElementById('endpoint');
+const path = document.getElementById('path');
+const body = document.getElementById('body');
+const token = document.getElementById('token');
+const result = document.getElementById('result');
+routes.forEach(([method,path],i) => endpoint.add(new Option(method+' '+path,i)));
+function select() {
+ const route = routes[endpoint.value];
+ path.value = route[1];
+ body.value = route[2] ? JSON.stringify(route[2],null,2) : '';
+}
+endpoint.onchange = select;
+select();
+document.getElementById('send').onclick = async () => {
+ const method = routes[endpoint.value][0];
+ const headers = {};
+ if (token.value) headers.Authorization = 'Bearer '+token.value;
+ const options = {method,headers};
+ if (method === 'POST' || method === 'PUT') {
+  headers['Content-Type'] = 'application/json';
+  options.body = body.value;
+ }
+ try {
+  const response = await fetch(path.value,options);
+  const text = await response.text();
+  let display = text;
+  try { display = JSON.stringify(JSON.parse(text),null,2); } catch {}
+  result.textContent = method+' '+path.value+'\nHTTP '+response.status+'\nServer: '+(response.headers.get('Server') || 'PHP development server')+'\n'+display;
+ } catch (error) { result.textContent = error.message; }
+};
+</script>
+</html>
